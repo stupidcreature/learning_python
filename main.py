@@ -555,6 +555,7 @@ def generate_prime_eratosthenes(max_prime, print_all_numbers=True):
 # main function simply for calling all the demo functions (one for each topic)
 # that way we can have everything in one file
 def main():
+
     # the very basics
     # simple_data_types()
     # conditionals()
@@ -565,15 +566,18 @@ def main():
     # object_oriented_programming()
 
     # 2 functions to generate prime numbers
-    max_prime = 1000
-    primes_naive = generate_prime_naive(max_prime, False)
-    primes_eratosthenes = generate_prime_eratosthenes(max_prime, False)
+    # max_prime = 1000
+    # primes_naive = generate_prime_naive(max_prime, False)
+    # primes_eratosthenes = generate_prime_eratosthenes(max_prime, False)
+    #
+    # prime_count_naive = primes_naive.count(True)
+    # prime_count_eratosthenes = primes_eratosthenes.count(True)
+    # print("Up until {} we have found {} prime numbers with the naive method and {} prime numbers "
+    #       "using the sieve of Eratosthenes.".format(max_prime, prime_count_naive, prime_count_eratosthenes))
 
-    prime_count_naive = primes_naive.count(True)
-    prime_count_eratosthenes = primes_eratosthenes.count(True)
-    print("Up until {} we have found {} prime numbers with the naive method and {} prime numbers "
-          "using the sieve of Eratosthenes.".format(max_prime, prime_count_naive, prime_count_eratosthenes))
+    pass
 
 
 if __name__ == "__main__":
     main()
+
