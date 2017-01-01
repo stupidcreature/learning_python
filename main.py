@@ -262,6 +262,7 @@ def loops():
 
         i += 1
 
+
 def functions():
     # FUNCTIONS -------------
     # Functions allow you to reuse and write readable code
@@ -285,6 +286,7 @@ def functions():
         return newNum
 
     print(subNumbers(1, 4))
+
 
 def user_input():
     # USER INPUT -------------
@@ -491,21 +493,49 @@ def object_oriented_programming():
 
     spot.multiple_sounds(4)
 
+
 # some conflicting line to try out git rebase
 # (was new comment in master -> we keep it)
 
 # main function simply for calling all the demo functions (one for each topic)
 # that way we can have everything in one file
-def main():
+def generate_prime_naive():
 
+    max_prime = 100
+    print("first calculate prime numbers up to {} using the naive method".format(max_prime))
+
+    for i in range(2, max_prime):
+
+        # start with the assumption that i is prime and try to disprove it
+        is_prime = True
+
+        for j in range(2, i-1):
+            if i % j == 0:
+                is_prime = False
+                break
+
+        if is_prime:
+            print('{} is a prime number'.format(i))
+
+
+def generate_prime_bresenham():
+    pass
+
+
+def main():
     # the very basics
-    simple_data_types()
-    conditionals()
-    loops()
-    functions()
-    user_input()
-    file_io()
-    object_oriented_programming()
+    # simple_data_types()
+    # conditionals()
+    # loops()
+    # functions()
+    # user_input()
+    # file_io()
+    # object_oriented_programming()
+
+    # 2 functions to generate prime numbers
+    generate_prime_naive()
+    generate_prime_bresenham()
+
 
 if __name__ == "__main__":
     main()
