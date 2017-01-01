@@ -4,8 +4,8 @@ import random
 import sys
 import os
 
-def main():
 
+def simple_data_types():
     # Hello world is just one line of code
     # print() outputs data to the screen
     print("Hello World")
@@ -165,6 +165,8 @@ def main():
     # Get a list of dictionary values
     print(super_villains.values())
 
+
+def conditionals():
     # CONDITIONALS -------------
     # The if, else and elif statements are used to perform different
     # actions based off of conditions
@@ -208,6 +210,8 @@ def main():
     else:
         print("You get a birthday party yeah")
 
+
+def loops():
     # FOR LOOPS -------------
     # Allows you to perform an action a set number of times
     # Range performs the action 10 times 0 - 9
@@ -258,7 +262,7 @@ def main():
 
         i += 1
 
-
+def functions():
     # FUNCTIONS -------------
     # Functions allow you to reuse and write readable code
     # Type def (define), function name and parameters it receives
@@ -266,7 +270,6 @@ def main():
     def addNumbers(fNum, sNum):
         sumNum = fNum + sNum
         return sumNum
-
 
     print(addNumbers(1, 4))
 
@@ -277,14 +280,13 @@ def main():
     # If you define a variable outside of the function it works every place
     newNum = 0;
 
-
     def subNumbers(fNum, sNum):
         newNum = fNum - sNum
         return newNum
 
-
     print(subNumbers(1, 4))
 
+def user_input():
     # USER INPUT -------------
     print('What is your name?')
 
@@ -338,6 +340,8 @@ def main():
     quote_list = long_string.split(" ")
     print(quote_list)
 
+
+def file_io():
     # FILE I/O -------------
 
     # Overwrite or create a file for writing
@@ -370,6 +374,7 @@ def main():
     os.remove("test.txt")
 
 
+def object_oriented_programming():
     # CLASSES AND OBJECTS -------------
     # The concept of OOP allows us to model real world things using code
     # Every object has attributes (color, height, weight) which are object variables
@@ -422,12 +427,10 @@ def main():
             return "{} is {} cm tall and {} kilograms and says {}".format(self.__name, self.__height, self.__weight,
                                                                           self.__sound)
 
-
     # How to create a Animal object
     cat = Animal('Whiskers', 33, 10, 'Meow')
 
     print(cat.toString())
-
 
     # You can't access this value directly because it is private
     # print(cat.__name)
@@ -459,7 +462,8 @@ def main():
             return "{} is {} cm tall and {} kilograms and says {}. His owner is {}".format(self.get_name(),
                                                                                            self.get_height(),
                                                                                            self.get_weight(),
-                                                                                           self.get_sound(), self.__owner)
+                                                                                           self.get_sound(),
+                                                                                           self.__owner)
 
         # You don't have to require attributes to be sent
         # This allows for method overloading
@@ -469,11 +473,9 @@ def main():
             else:
                 print(self.get_sound() * how_many)
 
-
     spot = Dog("Spot", 53, 27, "Ruff", "Derek")
 
     print(spot.toString())
-
 
     # Polymorphism allows use to refer to objects as their super class
     # and the correct functions are called automatically
@@ -481,7 +483,6 @@ def main():
     class AnimalTesting:
         def get_type(self, animal):
             animal.get_type()
-
 
     test_animals = AnimalTesting()
 
@@ -491,5 +492,20 @@ def main():
     spot.multiple_sounds(4)
 
 # some conflicting line to try out git rebase
+# (was new comment in master -> we keep it)
+
+# main function simply for calling all the demo functions (one for each topic)
+# that way we can have everything in one file
+def main():
+
+    # the very basics
+    simple_data_types()
+    conditionals()
+    loops()
+    functions()
+    user_input()
+    file_io()
+    object_oriented_programming()
+
 if __name__ == "__main__":
     main()
