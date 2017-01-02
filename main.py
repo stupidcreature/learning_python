@@ -375,7 +375,10 @@ def file_io():
     # FILE I/O -------------
 
     # Overwrite or create a file for writing
-    test_file = open("test.txt", "wb")
+    test_file = open("test.txt", mode="wb")
+
+    # print if the file is closed (should be False, because we just opened it)
+    print(test_file.closed)
 
     # Get the file mode used
     print(test_file.mode)
@@ -403,8 +406,16 @@ def file_io():
     # Delete the file
     os.remove("test.txt")
 
+    # create, change, print and remove directories
+    directory_name = "testdirectory"
+    os.mkdir(directory_name)
+    os.chdir(directory_name)
+    print("Current directory:", os.getcwd())
+    os.chdir("..")
+    os.rmdir(directory_name)
 
-def object_oriented_programming():
+
+def object_oriented_programming_basic():
     # CLASSES AND OBJECTS -------------
     # The concept of OOP allows us to model real world things using code
     # Every object has attributes (color, height, weight) which are object variables
@@ -522,6 +533,32 @@ def object_oriented_programming():
     spot.multiple_sounds(4)
 
 
+def object_oriented_programming_intermediate():
+    from enum import Enum
+
+    class Color(Enum):
+        RED = 1
+        GREEN = 2
+        BLUE = 3
+
+    class Shape:
+        def __init__(self, color):
+            # check type of parameter 'color'
+            if not isinstance(color, Color):
+                raise TypeError("First Parameter has to be of type 'enum Color'!")
+
+
+            self.__color = color
+
+        @property
+        def color(self):
+            return self.__color
+
+    generic_shape = Shape(Color.RED)
+    print(generic_shape.color)
+
+
+
 def initialize_bool_array(array_size, initial_value=False):
     # there must be a way to do that more efficiently
     array_of_primes = []
@@ -594,13 +631,14 @@ def primes():
 # that way we can have everything in one file
 def main():
 
-    simple_data_types()
+    # simple_data_types()
     # conditionals()
     # loops()
     # functions()
     # user_input()
     # file_io()
-    # object_oriented_programming()
+    # object_oriented_programming_basic()
+    object_oriented_programming_intermediate()
     # primes()
 
 
