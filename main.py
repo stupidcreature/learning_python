@@ -560,6 +560,18 @@ def generate_prime_eratosthenes(max_prime, print_all_numbers=True):
     return array_of_primes
 
 
+def primes():
+    # 2 functions to generate prime numbers
+    max_prime = 1000
+    primes_naive = generate_prime_naive(max_prime, False)
+    primes_eratosthenes = generate_prime_eratosthenes(max_prime, False)
+
+    prime_count_naive = primes_naive.count(True)
+    prime_count_eratosthenes = primes_eratosthenes.count(True)
+    print("Up until {} we have found {} prime numbers with the naive method and {} prime numbers "
+          "using the sieve of Eratosthenes.".format(max_prime, prime_count_naive, prime_count_eratosthenes))
+
+
 # main function simply for calling all the demo functions (one for each topic)
 # that way we can have everything in one file
 def main():
@@ -568,20 +580,12 @@ def main():
     # simple_data_types()
     # conditionals()
     # loops()
-    functions()
+    # functions()
     # user_input()
     # file_io()
     # object_oriented_programming()
+    # primes()
 
-    # 2 functions to generate prime numbers
-    # max_prime = 1000
-    # primes_naive = generate_prime_naive(max_prime, False)
-    # primes_eratosthenes = generate_prime_eratosthenes(max_prime, False)
-    #
-    # prime_count_naive = primes_naive.count(True)
-    # prime_count_eratosthenes = primes_eratosthenes.count(True)
-    # print("Up until {} we have found {} prime numbers with the naive method and {} prime numbers "
-    #       "using the sieve of Eratosthenes.".format(max_prime, prime_count_naive, prime_count_eratosthenes))
 
     pass
 
