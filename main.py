@@ -168,6 +168,16 @@ def simple_data_types():
     print(super_villains.values())
 
 
+    list_of_numbers = range(1,11)
+    list_of_lists_of_powers = [[math.pow(num, 2), math.pow(num, 3), math.pow(num, 4)]
+                               for num in list_of_numbers]
+
+    num = 1
+    for plist in list_of_lists_of_powers:
+        print("{} : {}".format(num, plist))
+        num += 1
+
+
 def conditionals():
     # CONDITIONALS -------------
     # The if, else and elif statements are used to perform different
@@ -576,7 +586,6 @@ def primes():
 # that way we can have everything in one file
 def main():
 
-    # the very basics
     # simple_data_types()
     # conditionals()
     # loops()
