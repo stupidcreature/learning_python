@@ -289,6 +289,14 @@ def functions():
 
     print(subNumbers(1, 4))
 
+    def sumManyNumbers(*numbers):
+        sum = 0
+        for num in numbers:
+            sum += num
+        return sum
+
+    print("1+2+3+4+5 =", sumManyNumbers(1,2,3,4,5))
+
 
 def user_input():
     # USER INPUT -------------
@@ -560,7 +568,7 @@ def main():
     # simple_data_types()
     # conditionals()
     # loops()
-    # functions()
+    functions()
     # user_input()
     # file_io()
     # object_oriented_programming()
@@ -580,4 +588,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
