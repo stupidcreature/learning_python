@@ -160,6 +160,7 @@ def simple_data_types():
 
     # Get the value for the passed key
     print(super_villains.get("Pied Piper"))
+    print(super_villains.get("Villain NotInList", "default value if Villain is not in list"))
 
     # Get a list of dictionary keys
     print(super_villains.keys())
@@ -167,6 +168,13 @@ def simple_data_types():
     # Get a list of dictionary values
     print(super_villains.values())
 
+    # extract key/value pairs
+    for villain_k, villain_v in super_villains.items():
+        print(villain_k, villain_v)
+
+    # extract key/value pairs (the same as above)
+    for villain in super_villains.items():
+        print(villain[0], villain[1])
 
     list_of_numbers = range(1,11)
     list_of_lists_of_powers = [[math.pow(num, 2), math.pow(num, 3), math.pow(num, 4)]
@@ -586,7 +594,7 @@ def primes():
 # that way we can have everything in one file
 def main():
 
-    # simple_data_types()
+    simple_data_types()
     # conditionals()
     # loops()
     # functions()
