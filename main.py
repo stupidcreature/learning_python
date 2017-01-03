@@ -2,10 +2,11 @@
 # These are called modules
 
 
-from learning_exceptions import exceptions
-
 # main function simply for calling all the demo functions (one for each topic)
 # that way we can have everything in one file
+from learning_functions_advanced import functions_advanced
+
+
 def main():
     # # the basics
     # simple_data_types()
@@ -17,6 +18,7 @@ def main():
     # object_oriented_programming_basic()
     # object_oriented_programming_intermediate()
     # exceptions()
+    functions_advanced()
 
     # # problems
     # primes()
