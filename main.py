@@ -4,7 +4,7 @@
 
 # main function simply for calling all the demo functions (one for each topic)
 # that way we can have everything in one file
-from learning_functions_advanced import functions_advanced
+from learning_list_comprehension_iterators_and_generators import iterators_list_comprehension_generators
 
 
 def main():
@@ -18,7 +18,8 @@ def main():
     # object_oriented_programming_basic()
     # object_oriented_programming_intermediate()
     # exceptions()
-    functions_advanced()
+    # functions_advanced()
+    iterators_list_comprehension_generators()
 
     # # problems
     # primes()
