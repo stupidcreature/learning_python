@@ -1,11 +1,10 @@
-# import is used to make specialty functions available
-# These are called modules
+from learning_regular_expressions import regular_expressions
+
+
+
 
 # main function simply for calling all the demo functions (one for each topic)
 # that way we can have everything in one file
-from learning_threads import threads
-
-
 def main():
     # # the basics
     # simple_data_types()
@@ -20,6 +19,7 @@ def main():
     # functions_advanced()
     # iterators_list_comprehension_generators()
     # threads()
+    regular_expressions()
 
     # # more comprehensive problems (smaller ones are embedded into the functions above
     # primes()
