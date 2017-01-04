@@ -1,6 +1,9 @@
 import re
 
 def regular_expressions():
+
+    return
+
     teststring1 = "The ape was at the apex"
     testpattern1 = "ape\S*"
 
