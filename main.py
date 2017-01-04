@@ -23,6 +23,8 @@ def main():
 
     # # more comprehensive problems (smaller ones are embedded into the functions above
     # primes()
+    import problem_regex_filesearch
+    problem_regex_filesearch.text_analysis()
 
 
     pass
