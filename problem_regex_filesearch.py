@@ -2,6 +2,8 @@ import os
 import re
 import operator
 import threading
+import time
+from collections import deque
 
 CHARACTERS_FOR_NEAR = 80
 CHARACTERS_FOR_WILDCARD = 160
@@ -48,7 +50,7 @@ def analyze_files(path, filespec, searchdictionary):
                 pat = re.compile(".{1,"+str(CHARACTERS_FOR_MATCH_EXTRACTION)+"}" + pattern + ".{1,"+str(CHARACTERS_FOR_MATCH_EXTRACTION)+"}", re.MULTILINE | re.IGNORECASE)
                 reres = pat.findall(contents)
                 for i in reres:
-                    print(i)
+                    pass #print(i)
             matchcount += len(reres)
 
         return matchcount * float(searchvalue)
@@ -72,21 +74,45 @@ def analyze_files(path, filespec, searchdictionary):
             super().__init__(group, target, name, args, kwargs, daemon=daemon)
             self.__id = threadid
             self.__keeprunning = True
-
+            self.__lock = threading.RLock()
+            self.__filequeue = deque()
+            self.__result = {}
 
         def run(self):
             while self.__keeprunning:
-                pass
+                filename = ""
+                self.__lock.acquire()
+                if len(self.__filequeue):
+                    filename = self.__filequeue.popleft()
+                self.__lock.release()
+                if filename != "":
+                    print(filename)
+                    res = analyze_file(filename)
+                    if any(res.values()):
+                        self.__result.update(res)
+                else:
+                    time.sleep(1)
+
 
         def terminate(self):
             self.__keeprunning = False
 
         def add_file_for_analyses(self, filename):
-            pass
+            self.__lock.acquire()
+            self.__filequeue.append(filename)
+            self.__lock.release()
+
+        def getresult(self):
+            return self.__result
+
+
+
 
     analyses_thread_pool = []
     for i in range(0,THREADS_FOR_ANALYSES):
         analyses_thread_pool.append( AnalysesThread(i) )
+        analyses_thread_pool[i].start()
+
 
 
     result = {}
@@ -96,11 +122,16 @@ def analyze_files(path, filespec, searchdictionary):
         files = list(filter(lambda x: re.search(filespec, x), files))
         for name in files:
             filename = os.path.join(root, name)
-            # analyses_thread_pool[filecount % THREADS_FOR_ANALYSES].add_file_for_analyses(filename)
-            # filecount += 1
-            res = analyze_file(filename)
-            if any(res.values()):
-                result.update(res)
+            analyses_thread_pool[filecount % THREADS_FOR_ANALYSES].add_file_for_analyses(filename)
+            filecount += 1
+            # res = analyze_file(filename)
+            # if any(res.values()):
+            #     result.update(res)
+
+    # wait for all threads to finish their work and collect their results
+    for i in range(0,THREADS_FOR_ANALYSES):
+        analyses_thread_pool[i].join()
+        result.update(analyses_thread_pool[i].getresult())
 
     return result
 
@@ -134,8 +165,9 @@ def text_analysis(root_search_path=""):
         - all occurrences '.*' will be replaced with {} .{1,CHARACTERS_FOR_WILDCARD}
     '''
 
-    if len(root_search_path) == 0:
-        root_search_path = r"r:/1/"
+    # if len(root_search_path) == 0:
+    #     root_search_path = r"r:/1/"
+    root_search_path = r"r:/1/"
 
     searchdictionary = {r"(testname|derek) NEAR (def)": 0.1, r"import \bre\b": 0.1, r"isinstance NEAR TypeError": 10,
                         r"def NEAR if": 5}
