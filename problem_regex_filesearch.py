@@ -4,7 +4,9 @@ import operator
 import threading
 import time
 from collections import deque
-from multiprocessing import Pool
+from multiprocessing import Pool, Process, Value, Array
+from functools import partial
+from itertools import repeat
 
 CHARACTERS_FOR_NEAR = 80
 CHARACTERS_FOR_WILDCARD = 160
@@ -18,102 +20,108 @@ def debugprint(*args):
     pass
 
 
+
+def get_search_result(contents, searchkey, searchvalue):
+
+    patterns = searchkey.split(";")
+    # print(patterns)
+    matchcount = 0
+    for pattern in patterns:
+        # if there are groups, change them to non-capturing (to be able to print the whole match during debugging)
+        # replace ( with (?:
+        rereplace = re.compile("\(")
+        pattern = rereplace.sub("(?:", pattern)
+
+        # replace Keyword NEAR with .{1,CHARACTERS_FOR_NEAR}
+        rereplace = re.compile(" NEAR ")
+        pattern = rereplace.sub(".{1," + str(CHARACTERS_FOR_NEAR) + "}", pattern)
+
+        # replace all spaces with \s+
+        rereplace = re.compile(" ")
+        pattern = rereplace.sub(r"\s+", pattern)
+
+        # replace all occurrences of '.*' with .{1,CHARACTERS_FOR_WILDCARD}
+        rereplace = re.compile("\.\*")
+        pattern = rereplace.sub(".{1," + str(CHARACTERS_FOR_WILDCARD) + "}", pattern)
+
+        pat = re.compile(pattern, re.MULTILINE | re.IGNORECASE)
+        reres = pat.findall(contents)
+
+        if len(reres):
+            debugprint("\nMatches for searchstring:", pattern)
+            # recompile pattern to extract surrounding text for display of match
+            pat = re.compile(".{1," + str(CHARACTERS_FOR_MATCH_EXTRACTION) + "}" + pattern + \
+                             ".{1," + str(CHARACTERS_FOR_MATCH_EXTRACTION) + "}", re.MULTILINE | re.IGNORECASE)
+            reres = pat.findall(contents)
+            for i in reres:
+                print(i)
+        matchcount += len(reres)
+
+    return matchcount * float(searchvalue)
+
+
+def analyze_file(filename, searchdictionary):
+    debugprint(filename)
+    with open(filename, "rb") as file:
+        contents = " ".join(str(line).strip() for line in file)
+
+    res = 0
+    for searchkey, searchvalue in searchdictionary.items():
+        res += get_search_result(contents, searchkey, searchvalue)
+        debugprint(searchkey, ":", res)
+
+    result = {filename: res}
+    return result
+
+
 # analyzes files matching filespec (recursively) using criteria given in searchdictionary
 def analyze_files(path, filespec, searchdictionary):
-    def get_search_result(contents, searchkey, searchvalue):
 
-        patterns = searchkey.split(";")
-        # print(patterns)
-        matchcount = 0
-        for pattern in patterns:
-            # if there are groups, change them to non-capturing (to be able to print the whole match during debugging)
-            # replace ( with (?:
-            rereplace = re.compile("\(")
-            pattern = rereplace.sub("(?:", pattern)
 
-            # replace Keyword NEAR with .{1,CHARACTERS_FOR_NEAR}
-            rereplace = re.compile(" NEAR ")
-            pattern = rereplace.sub(".{1," + str(CHARACTERS_FOR_NEAR) + "}", pattern)
-
-            # replace all spaces with \s+
-            rereplace = re.compile(" ")
-            pattern = rereplace.sub(r"\s+", pattern)
-
-            # replace all occurrences of '.*' with .{1,CHARACTERS_FOR_WILDCARD}
-            rereplace = re.compile("\.\*")
-            pattern = rereplace.sub(".{1," + str(CHARACTERS_FOR_WILDCARD) + "}", pattern)
-
-            pat = re.compile(pattern, re.MULTILINE | re.IGNORECASE)
-            reres = pat.findall(contents)
-
-            if len(reres):
-                debugprint("\nMatches for searchstring:", pattern)
-                # recompile pattern to extract surrounding text for display of match
-                pat = re.compile(".{1," + str(CHARACTERS_FOR_MATCH_EXTRACTION) + "}" + pattern + \
-                                 ".{1," + str(CHARACTERS_FOR_MATCH_EXTRACTION) + "}", re.MULTILINE | re.IGNORECASE)
-                reres = pat.findall(contents)
-                for i in reres:
-                    print(i)
-            matchcount += len(reres)
-
-        return matchcount * float(searchvalue)
-
-    def analyze_file(filename):
-        debugprint(filename)
-        with open(filename, "rb") as file:
-            contents = " ".join(str(line).strip() for line in file)
-
-        res = 0
-        for searchkey, searchvalue in searchdictionary.items():
-            res += get_search_result(contents, searchkey, searchvalue)
-            debugprint(searchkey, ":", res)
-
-        return {filename: res}
-
-    class AnalysesThread(threading.Thread):
-
-        def __init__(self, threadid, group=None, target=None, name=None, args=(), kwargs=None, *, daemon=None):
-            super().__init__(group, target, name, args, kwargs, daemon=daemon)
-            self.__id = threadid
-            self.__keeprunning = True
-            self.__lock = threading.Lock()
-            self.__filequeue = deque()
-            self.__result = {}
-
-        def run(self):
-            # first make sure there is some time for the deque to be filled
-            # otherwise we will terminate immediately
-            time.sleep(1)
-
-            while self.__keeprunning:
-                filename = ""
-                self.__lock.acquire()
-                if len(self.__filequeue):
-                    filename = self.__filequeue.popleft()
-                self.__lock.release()
-                if filename != "":
-                    # print(filename)
-                    res = analyze_file(filename)
-                    if any(res.values()):
-                        print("Thread-ID of thread that received a result:", self.__id, "at",
-                              time.strftime("%H:%M:%S", time.localtime()))
-                        self.__result.update(res)
-                else:
-                    # time.sleep(1)
-                    self.__keeprunning = False
-
-        def terminate(self):
-            self.__keeprunning = False
-
-        def add_file_for_analyses(self, filename):
-            self.__lock.acquire()
-            self.__filequeue.append(filename)
-            self.__lock.release()
-
-        def getresult(self):
-            return self.__result
-
-        ##
+    # class AnalysesThread(threading.Thread):
+    #
+    #     def __init__(self, threadid, group=None, target=None, name=None, args=(), kwargs=None, *, daemon=None):
+    #         super().__init__(group, target, name, args, kwargs, daemon=daemon)
+    #         self.__id = threadid
+    #         self.__keeprunning = True
+    #         self.__lock = threading.Lock()
+    #         self.__filequeue = deque()
+    #         self.__result = {}
+    #
+    #     def run(self):
+    #         # first make sure there is some time for the deque to be filled
+    #         # otherwise we will terminate immediately
+    #         time.sleep(1)
+    #
+    #         while self.__keeprunning:
+    #             filename = ""
+    #             self.__lock.acquire()
+    #             if len(self.__filequeue):
+    #                 filename = self.__filequeue.popleft()
+    #             self.__lock.release()
+    #             if filename != "":
+    #                 # print(filename)
+    #                 res = analyze_file(filename)
+    #                 if any(res.values()):
+    #                     print("Thread-ID of thread that received a result:", self.__id, "at",
+    #                           time.strftime("%H:%M:%S", time.localtime()))
+    #                     self.__result.update(res)
+    #             else:
+    #                 # time.sleep(1)
+    #                 self.__keeprunning = False
+    #
+    #     def terminate(self):
+    #         self.__keeprunning = False
+    #
+    #     def add_file_for_analyses(self, filename):
+    #         self.__lock.acquire()
+    #         self.__filequeue.append(filename)
+    #         self.__lock.release()
+    #
+    #     def getresult(self):
+    #         return self.__result
+    #
+    #     ##
 
     # analyses_thread_pool = []
     # for i in range(0, THREADS_FOR_ANALYSES):
@@ -135,8 +143,12 @@ def analyze_files(path, filespec, searchdictionary):
 
 
     with Pool(THREADS_FOR_ANALYSES) as thread_pool:
-        res = thread_pool.map(analyze_file, filenames)
-        result.update(res)
+        res = thread_pool.starmap(analyze_file, zip(filenames, repeat(searchdictionary)))
+        thread_pool.close()
+        thread_pool.join()
+        for i in res:
+            result.update(i)
+
 
     ##
     # while any(list(map((lambda x: x.isAlive()), analyses_thread_pool))):
@@ -188,7 +200,7 @@ def text_analysis(root_search_path=""):
                         r"def NEAR if": 5}
     searchdictionary = {r"CacheDispatcher\bThread\b": 1, r"CacheDispatcher": .5}
 
-    # searchdictionary = import_search_patterns(r'r:/1/searchdefinitions.txt')
+    searchdictionary = import_search_patterns(r'r:/1/searchdefinitions.txt')
 
     # result = analyze_files('c:\\dev\\python\\textdatabase\\', ".*py", searchdictionary)
 
