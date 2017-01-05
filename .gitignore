@@ -92,3 +92,6 @@ ENV/
 
 #pycharm
 .idea
+
+#local excluded file 
+not_checked_in.py
