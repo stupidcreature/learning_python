@@ -8,7 +8,9 @@ CHARACTERS_FOR_NEAR = 80
 CHARACTERS_FOR_WILDCARD = 160
 CHARACTERS_FOR_MATCH_EXTRACTION = 50
 
-THREADS_FOR_ANALYSES = 8
+THREADS_FOR_ANALYSES = 6
+
+SHOW_MATCHES = False
 
 
 def debugprint(*args):
@@ -41,7 +43,7 @@ def get_search_result(contents, searchkey, searchvalue):
         pat = re.compile(pattern, re.MULTILINE | re.IGNORECASE)
         reres = pat.findall(contents)
 
-        if len(reres):
+        if SHOW_MATCHES and len(reres):
             debugprint("\nMatches for searchstring:", pattern)
             # recompile pattern to extract surrounding text for display of match
             pat = re.compile(".{1," + str(CHARACTERS_FOR_MATCH_EXTRACTION) + "}" + pattern + \
